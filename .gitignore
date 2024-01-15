@@ -4,3 +4,5 @@ public/core
 public/modules/contrib
 public/themes/contrib
 public/profiles/contrib
+.idea
+.htaccess

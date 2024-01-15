@@ -1,0 +1,6 @@
+test_library:
+  version: 1.x
+  js:
+    assets/test-file.js: {}
+  dependencies:
+    - core/drupal

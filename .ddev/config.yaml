@@ -1,14 +1,14 @@
 name: testbench
 type: drupal10
 docroot: public
-php_version: "8.1"
+php_version: "8.3"
 webserver_type: nginx-fpm
 xdebug_enabled: false
 additional_hostnames: []
 additional_fqdns: []
 database:
     type: mariadb
-    version: "10.6"
+    version: "11.4"
 use_dns_when_possible: true
 composer_version: "2"
 web_environment: []

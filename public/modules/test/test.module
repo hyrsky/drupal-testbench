@@ -1,0 +1,53 @@
+<?php
+
+declare(strict_types = 1);
+
+use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
+use Drupal\Core\StreamWrapper\LocalStream;
+
+/**
+ * @file
+ * Provides a myentity entity type.
+ */
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function test_preprocess_html(&$variables): void {
+  $variables['#attached']['library'][] = 'test/test_library';
+}
+
+/**
+ * Implements hook_file_url_alter().
+ */
+function test_file_url_alter(&$uri) : void {
+  $streamWrapperManager = \Drupal::service(StreamWrapperManagerInterface::class);
+  $assetPath = 'foobar-assets';
+
+  $path = ltrim($uri, '/');
+
+  if (str_starts_with($uri, $assetPath)) {
+    return;
+  }
+
+  $wrapper = $streamWrapperManager->getViaScheme(
+    $streamWrapperManager::getScheme($uri)
+  );
+
+  // Convert public:// paths to relative.
+  if ($wrapper instanceof LocalStream) {
+    $path = $wrapper->getDirectoryPath() . '/' . $streamWrapperManager::getTarget($uri);
+    // KernelTests will convert public://file to vfs://root/simpletest/file.
+    // Remove vfs part to make testing possible.
+    $path = str_replace('vfs://root/', '', $path);
+  }
+
+  // Check if path is local.
+  if (!preg_match('/^(sites|core|themes|modules)\/\w/', $path)) {
+    return;
+  }
+
+  // Serve element from same domain via relative asset URL. Like:
+  // /assets/sites/default/files/js/{sha256}.js.
+  $uri = sprintf('/%s/%s', $assetPath, ltrim($path, '/'));
+}
